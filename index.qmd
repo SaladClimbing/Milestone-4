@@ -1,7 +1,88 @@
 ---
-title: "Milestone 4"
+title: "Where Do Goals Come From?"
+subtitle: "Exploring NHL Shot Quality Over 19 Seasons"
+author: "Andrew Lucas"
 ---
 
-This is a Quarto website.
+## Introduction
 
-To learn more about Quarto websites visit <https://quarto.org/docs/websites>.
+How have NHL shot profiles and scoring rates changed across 19 seasons (2007--2025), and what shot characteristics best predict goals? This analysis uses shot-level play-by-play data from [MoneyPuck](https://moneypuck.com/data.htm) spanning 2,079,377 shot events to examine the evolution of shot selection in the modern NHL, evaluate an expected goals (xG) model, and identify which shot characteristics most strongly predict scoring.
+
+The so-called "analytics revolution" in hockey has emphasized shot quality over shot quantity. We investigate whether the data supports this narrative by tracking how shot distances, angles, types, and rush/rebound rates have shifted over time.
+
+## Setup and Data Loading
+
+```{r}
+#| label: setup
+library(tidyverse)
+library(scales)
+library(broom)
+```
+
+```{r}
+#| label: load-data
+seasons <- 2007:2025
+
+all_shots <- map_dfr(seasons, function(yr) {
+  read_csv(paste0("../Project/data/shots_", yr, ".csv"), show_col_types = FALSE) %>%
+    mutate(season = yr)
+})
+```
+
+```{r}
+#| label: data-summary
+all_shots %>%
+  summarise(
+    total_shots = n(),
+    total_goals = sum(goal == 1),
+    n_seasons = n_distinct(season),
+    n_players = n_distinct(shooterPlayerId),
+    n_goalies = n_distinct(goalieIdForShot),
+    date_range = paste(min(season), max(season), sep = " - ")
+  ) %>%
+  knitr::kable(
+    col.names = c("Total Shots", "Total Goals", "Seasons", "Unique Shooters", "Unique Goalies", "Season Range"),
+    format.args = list(big.mark = ",")
+  )
+```
+
+The dataset contains **`r comma(nrow(all_shots))`** shot events across **19 seasons**, with **`r comma(sum(all_shots$goal == 1))`** goals. Two seasons had shortened schedules due to work stoppages: 2012 (NHL lockout, 48 games) and 2020 (COVID-19, 56 games). We flag these for normalization in later analyses.
+
+```{r}
+#| label: mark-shortened
+all_shots <- all_shots %>%
+  mutate(
+    shortened_season = season %in% c(2012, 2020),
+    season_label = paste0(substr(season, 3, 4), "/", substr(season + 1, 3, 4))
+  )
+```
+
+## Where Shots Come From
+
+The heatmap below shows where all 2,079,377 shots originated on the ice. The concentration of shots in the slot area (directly in front of the net) is immediately visible, with volume dropping off sharply toward the boards and blue line.
+
+```{r}
+#| label: fig-shot-heatmap
+#| fig-cap: "Density of all shots on an NHL rink. Warmer colors indicate higher shot volume."
+#| fig-width: 10
+#| fig-height: 6
+
+all_shots %>%
+  ggplot(aes(x = xCordAdjusted, y = yCordAdjusted)) +
+  stat_density_2d(
+    aes(fill = after_stat(level)),
+    geom = "polygon",
+    contour = TRUE,
+    bins = 30
+  ) +
+  scale_fill_viridis_c(option = "magma", direction = -1) +
+  coord_equal(xlim = c(-100, 100), ylim = c(-42, 42)) +
+  labs(x = "x-coordinate (feet)", y = "y-coordinate (feet)") +
+  theme_minimal(base_size = 12) +
+  theme(
+    legend.position = "right",
+    panel.grid = element_blank()
+  )
+```
+
+This is just the beginning. Head to the [Analysis](analysis.qmd) page to explore scoring trends, shot quality metrics, and predictive modeling in depth.

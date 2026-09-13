@@ -2,4 +2,24 @@
 title: "About"
 ---
 
-About this site
+## Data Source
+
+This analysis uses shot-level play-by-play data from [MoneyPuck](https://moneypuck.com/data.htm), covering 2,079,377 shot events across 19 NHL seasons (2007--2025). The dataset includes precomputed expected goals (xG) values from MoneyPuck's proprietary model.
+
+## Methodology
+
+- **Shot data** was loaded from individual season CSV files (2007--2025) and combined into a single analysis dataset.
+- **Scoring rates** are calculated as goals per shot (not per game) to normalize across shortened seasons (2012 lockout, 2020 COVID).
+- **Shot quality** is assessed using distance, angle, shot type, rush/rebound status, and empty net indicators.
+- **The xG model** is evaluated using calibration plots, Brier scores, and team/shooter-level residual analysis.
+- **A simple logistic regression** (`goal ~ distance + angle + shotType + rebound + rush + emptyNet`) is fitted to identify which characteristics most strongly predict scoring.
+
+## Tools
+
+- **R** with `tidyverse`, `scales`, and `broom` for data manipulation, visualization, and modeling.
+- **Quarto** for reproducible website generation.
+- **ggplot2** for all visualizations.
+
+## Author
+
+Andrew Lucas

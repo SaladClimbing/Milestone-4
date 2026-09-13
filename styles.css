@@ -1,1 +1,49 @@
-/* css styles */
+/* Custom styles for NHL Shot Quality Analysis website */
+
+/* Hero section styling */
+.title-block {
+  text-align: center;
+  padding: 2rem 0;
+}
+
+.title-block .title {
+  font-size: 2.5rem;
+  font-weight: 700;
+}
+
+.title-block .subtitle {
+  font-size: 1.2rem;
+  color: #818596;
+  margin-top: 0.5rem;
+}
+
+/* Smooth scrolling */
+html {
+  scroll-behavior: smooth;
+}
+
+/* Figure captions on dark background */
+figcaption {
+  color: #a9b7c6;
+  font-size: 0.9rem;
+  font-style: italic;
+}
+
+/* Better table styling for data summaries */
+table {
+  border-collapse: collapse;
+}
+
+th {
+  background-color: #2e313f !important;
+  color: #c6c8d1 !important;
+}
+
+td {
+  border-color: #2e313f !important;
+}
+
+/* Navbar active link highlight */
+.navbar .active {
+  color: #89b8c2 !important;
+}
