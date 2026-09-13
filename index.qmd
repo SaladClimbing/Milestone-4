@@ -76,7 +76,7 @@ all_shots %>%
     bins = 30
   ) +
   scale_fill_viridis_c(option = "magma", direction = -1) +
-  coord_equal(xlim = c(-100, 100), ylim = c(-42, 42)) +
+  coord_equal(xlim = c(0, 100), ylim = c(-42, 42)) +
   labs(x = "x-coordinate (feet)", y = "y-coordinate (feet)") +
   theme_minimal(base_size = 12) +
   theme(
